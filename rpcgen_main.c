@@ -261,7 +261,11 @@ make_cpp_command (const char *filename)
    * outside the scanner.
    */
   start_string ();
+#ifdef _WIN32
+  add_string ("cpp");
+#else
   add_string (EXTCPP);
+#endif
   add_char (' ');
 
   for (p = filename; *p; p++) {
