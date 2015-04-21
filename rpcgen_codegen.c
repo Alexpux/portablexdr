@@ -61,8 +61,10 @@ gen_line (void)
 static void
 write_basename (void)
 {
-  const char *p = strrchr (output_filename, '/') ? : output_filename;
+  const char *p = strrchr (output_filename, '/');
   const char *q = strrchr (output_filename, '.');
+
+  p = (p ? p + 1 : output_filename);
 
   while (*p && p != q) {
     fputc (*p, yyout);
