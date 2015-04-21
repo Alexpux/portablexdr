@@ -184,7 +184,7 @@ do_rpcgen (const char *filename, const char *out)
   }
 
   if (out && strcmp (out, "-") == 0) {
-    output_filename = NULL;
+    output_filename = filename;
     unlink_output_filename = 0;
     yyout = stdout;
   }
