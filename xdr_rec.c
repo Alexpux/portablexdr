@@ -147,7 +147,7 @@ xdrrec_create(xdrs, sendsize, recvsize, tcp_handle, readit, writeit)
 	register XDR *xdrs;
 	register u_int sendsize;
 	register u_int recvsize;
-	caddr_t tcp_handle;
+	void *tcp_handle;
 	int (*readit)();  /* like read, but pass it a tcp_handle, not sock */
 	int (*writeit)();  /* like write, but pass it a tcp_handle, not sock */
 {

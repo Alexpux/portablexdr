@@ -252,7 +252,7 @@ xdr_char(xdrs, cp)
 bool_t
 xdr_u_char(xdrs, cp)
 	XDR *xdrs;
-	char *cp;
+	u_char *cp;
 {
 	u_int u;
 
@@ -457,7 +457,7 @@ xdr_union(xdrs, dscmp, unp, choices, dfault)
 	register XDR *xdrs;
 	enum_t *dscmp;		/* enum to decide which arm to work on */
 	char *unp;		/* the union itself */
-	struct xdr_discrim *choices;	/* [value, xdr proc] for each arm */
+	const struct xdr_discrim *choices;	/* [value, xdr proc] for each arm */
 	xdrproc_t dfault;	/* default xdr routine */
 {
 	register enum_t dscm;

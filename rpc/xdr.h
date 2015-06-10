@@ -38,6 +38,8 @@
 #ifndef __XDR_HEADER__
 #define __XDR_HEADER__
 
+#include <stdio.h>
+
 /*
  * XDR provides a conventional way for converting between C data
  * types and an external bit-string representation.  Library supplied
@@ -221,28 +223,34 @@ struct xdr_discrim {
 /*
  * These are the "generic" xdr routines.
  */
-extern bool_t	xdr_void();
-extern bool_t	xdr_int();
-extern bool_t	xdr_u_int();
-extern bool_t	xdr_long();
-extern bool_t	xdr_u_long();
-extern bool_t	xdr_short();
-extern bool_t	xdr_u_short();
-extern bool_t	xdr_bool();
-extern bool_t	xdr_enum();
-extern bool_t	xdr_array();
-extern bool_t	xdr_bytes();
-extern bool_t	xdr_opaque();
-extern bool_t	xdr_string();
-extern bool_t	xdr_union();
-extern bool_t	xdr_char();
-extern bool_t	xdr_u_char();
-extern bool_t	xdr_vector();
-extern bool_t	xdr_float();
-extern bool_t	xdr_double();
-extern bool_t	xdr_reference();
-extern bool_t	xdr_pointer();
-extern bool_t	xdr_wrapstring();
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern bool_t	xdr_void(void);
+extern bool_t	xdr_int(XDR *, int *);
+extern bool_t	xdr_u_int(XDR *, u_int *);
+extern bool_t	xdr_long(XDR *, long *);
+extern bool_t	xdr_u_long(XDR *, u_long *);
+extern bool_t	xdr_short(XDR *, short *);
+extern bool_t	xdr_u_short(XDR *, u_short *);
+extern bool_t	xdr_bool(XDR *, bool_t *);
+extern bool_t	xdr_enum(XDR *, enum_t *);
+extern bool_t	xdr_array(XDR *, char **, u_int *, u_int, u_int, xdrproc_t);
+extern bool_t	xdr_bytes(XDR *, char **, u_int *, u_int);
+extern bool_t	xdr_opaque(XDR *, char *, u_int);
+extern bool_t	xdr_string(XDR *, char **, u_int);
+extern bool_t	xdr_union(XDR *, enum_t *, char *, const struct xdr_discrim *, xdrproc_t);
+extern bool_t	xdr_char(XDR *, char *);
+extern bool_t	xdr_u_char(XDR *, u_char *);
+extern bool_t	xdr_vector(XDR *, char *, u_int, u_int, xdrproc_t);
+extern bool_t	xdr_float(XDR *, float *);
+extern bool_t	xdr_double(XDR *, double *);
+extern bool_t	xdr_reference(XDR *, char **, u_int, xdrproc_t);
+extern bool_t	xdr_pointer(XDR *, char **, u_int, xdrproc_t);
+extern bool_t	xdr_wrapstring(XDR *, char **);
+#ifdef __cplusplus
+}
+#endif
 
 /*
  * Common opaque bytes objects used by many rpc protocols;
@@ -254,18 +262,37 @@ struct netobj {
 	char	*n_bytes;
 };
 typedef struct netobj netobj;
-extern bool_t   xdr_netobj();
+extern bool_t   xdr_netobj(XDR *, struct netobj *);
 
 /*
  * These are the public routines for the various implementations of
  * xdr streams.
  */
-extern void   xdrmem_create();		/* XDR using memory buffers */
-extern void   xdrstdio_create();	/* XDR using stdio library */
-extern void   xdrrec_create();		/* XDR pseudo records for tcp */
-extern bool_t xdrrec_endofrecord();	/* make end of xdr record */
-extern bool_t xdrrec_skiprecord();	/* move to beginning of next record */
-extern bool_t xdrrec_eof();		/* true if no more input */
+#ifdef __cplusplus
+extern "C" {
+#endif
+/* XDR using memory buffers */
+extern void   xdrmem_create(XDR *, char *, u_int, enum xdr_op);
+
+/* XDR using stdio library */
+extern void   xdrstdio_create(XDR *, FILE *, enum xdr_op);
+
+/* XDR pseudo records for tcp */
+extern void   xdrrec_create(XDR *, u_int, u_int, void *,
+			    int (*)(void *, void *, int),
+			    int (*)(void *, void *, int));
+
+/* make end of xdr record */
+extern bool_t xdrrec_endofrecord(XDR *, int);
+
+/* move to beginning of next record */
+extern bool_t xdrrec_skiprecord(XDR *);
+
+/* true if no more input */
+extern bool_t xdrrec_eof(XDR *);
+#ifdef __cplusplus
+}
+#endif
 
 /* RWMJ */
 extern void xdr_free (xdrproc_t, char *);
