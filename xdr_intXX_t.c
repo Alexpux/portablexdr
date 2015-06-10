@@ -24,7 +24,7 @@
 bool_t
 xdr_int64_t (XDR *xdrs, int64_t *ip)
 {
-  int32_t t1, t2;
+  long t1, t2;
 
   switch (xdrs->x_op)
     {
@@ -49,19 +49,19 @@ xdr_int64_t (XDR *xdrs, int64_t *ip)
 bool_t
 xdr_uint64_t (XDR *xdrs, uint64_t *uip)
 {
-  uint32_t t1;
-  uint32_t t2;
+  long t1;
+  long t2;
 
   switch (xdrs->x_op)
     {
     case XDR_ENCODE:
       t1 = (uint32_t) ((*uip) >> 32);
       t2 = (uint32_t) (*uip);
-      return (XDR_PUTINT32 (xdrs, (int32_t *) &t1) &&
-	      XDR_PUTINT32(xdrs, (int32_t *) &t2));
+      return (XDR_PUTINT32 (xdrs, &t1) &&
+	      XDR_PUTINT32(xdrs, &t2));
     case XDR_DECODE:
-      if (!XDR_GETINT32(xdrs, (int32_t *) &t1) ||
-	  !XDR_GETINT32(xdrs, (int32_t *) &t2))
+      if (!XDR_GETINT32(xdrs, &t1) ||
+	  !XDR_GETINT32(xdrs, &t2))
         return FALSE;
       *uip = ((uint64_t) t1) << 32;
       *uip |= t2;
@@ -77,12 +77,18 @@ xdr_uint64_t (XDR *xdrs, uint64_t *uip)
 bool_t
 xdr_int32_t (XDR *xdrs, int32_t *lp)
 {
+  long t;
+
   switch (xdrs->x_op)
     {
     case XDR_ENCODE:
-      return XDR_PUTINT32 (xdrs, lp);
+      t = *lp;
+      return XDR_PUTINT32 (xdrs, &t);
     case XDR_DECODE:
-      return XDR_GETINT32 (xdrs, lp);
+      if (!XDR_GETINT32 (xdrs, &t))
+        return FALSE;
+      *lp = t;
+      return TRUE;
     case XDR_FREE:
       return TRUE;
     default:
@@ -94,12 +100,17 @@ xdr_int32_t (XDR *xdrs, int32_t *lp)
 bool_t
 xdr_uint32_t (XDR *xdrs, uint32_t *ulp)
 {
+  long t;
+
   switch (xdrs->x_op)
     {
     case XDR_ENCODE:
-      return XDR_PUTINT32 (xdrs, (int32_t *) ulp);
+      t = *ulp;
+      return XDR_PUTINT32 (xdrs, &t);
     case XDR_DECODE:
-      return XDR_GETINT32 (xdrs, (int32_t *) ulp);
+      if (!XDR_GETINT32 (xdrs, &t))
+        return FALSE;
+      *ulp = t;
     case XDR_FREE:
       return TRUE;
     default:
@@ -111,7 +122,7 @@ xdr_uint32_t (XDR *xdrs, uint32_t *ulp)
 bool_t
 xdr_int16_t (XDR *xdrs, int16_t *ip)
 {
-  int32_t t;
+  long t;
 
   switch (xdrs->x_op)
     {
@@ -134,15 +145,15 @@ xdr_int16_t (XDR *xdrs, int16_t *ip)
 bool_t
 xdr_uint16_t (XDR *xdrs, uint16_t *uip)
 {
-  uint32_t ut;
+  long ut;
 
   switch (xdrs->x_op)
     {
     case XDR_ENCODE:
       ut = (uint32_t) *uip;
-      return XDR_PUTINT32 (xdrs, (int32_t *) &ut);
+      return XDR_PUTINT32 (xdrs, &ut);
     case XDR_DECODE:
-      if (!XDR_GETINT32 (xdrs, (int32_t *) &ut))
+      if (!XDR_GETINT32 (xdrs, &ut))
 	return FALSE;
       *uip = (uint16_t) ut;
       return TRUE;
@@ -157,7 +168,7 @@ xdr_uint16_t (XDR *xdrs, uint16_t *uip)
 bool_t
 xdr_int8_t (XDR *xdrs, int8_t *ip)
 {
-  int32_t t;
+  long t;
 
   switch (xdrs->x_op)
     {
@@ -180,15 +191,15 @@ xdr_int8_t (XDR *xdrs, int8_t *ip)
 bool_t
 xdr_uint8_t (XDR *xdrs, uint8_t *uip)
 {
-  uint32_t ut;
+  long ut;
 
   switch (xdrs->x_op)
     {
     case XDR_ENCODE:
       ut = (uint32_t) *uip;
-      return XDR_PUTINT32 (xdrs, (int32_t *) &ut);
+      return XDR_PUTINT32 (xdrs, &ut);
     case XDR_DECODE:
-      if (!XDR_GETINT32 (xdrs, (int32_t *) &ut))
+      if (!XDR_GETINT32 (xdrs, &ut))
 	return FALSE;
       *uip = (uint8_t) ut;
       return TRUE;

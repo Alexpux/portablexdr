@@ -89,6 +89,38 @@ enum xdr_op {
 		    * BYTES_PER_XDR_UNIT)
 
 /*
+ * The XDR handle.
+ * Contains operation which is being applied to the stream,
+ * an operations vector for the paticular implementation (e.g. see xdr_mem.c),
+ * and two private fields for the use of the particular impelementation.
+ */
+typedef struct __rpc_xdr {
+	enum xdr_op	x_op;		/* operation; fast additional param */
+	struct xdr_ops {
+		/* get a long from underlying stream */
+		bool_t	(*x_getlong)(struct __rpc_xdr *, long *);
+		/* put a long to " */
+		bool_t	(*x_putlong)(struct __rpc_xdr *, const long *);
+		/* get some bytes from " */
+		bool_t	(*x_getbytes)(struct __rpc_xdr *, char *, u_int);
+		/* put some bytes to " */
+		bool_t	(*x_putbytes)(struct __rpc_xdr *, const char *, u_int);
+		/* returns bytes off from beginning */
+		u_int	(*x_getpostn)(struct __rpc_xdr *);
+		/* lets you reposition the stream */
+		bool_t  (*x_setpostn)(struct __rpc_xdr *, u_int);
+		/* buf quick ptr to buffered data */
+		int32_t *(*x_inline)(struct __rpc_xdr *, u_int);
+		/* free privates of this xdr_stream */
+		void	(*x_destroy)(struct __rpc_xdr *);
+	} *x_ops;
+	caddr_t 	x_public;	/* users' data */
+	caddr_t		x_private;	/* pointer to private data */
+	caddr_t 	x_base;		/* private used for position info */
+	int		x_handy;	/* extra private word */
+} XDR;
+
+/*
  * A xdrproc_t exists for each data type which is to be encoded or decoded.
  *
  * The second argument to the xdrproc_t is a pointer to an opaque pointer.
@@ -96,32 +128,10 @@ enum xdr_op {
  * to be decoded.  If this pointer is 0, then the type routines should
  * allocate dynamic storage of the appropriate size and return it.
  * bool_t	(*xdrproc_t)(XDR *, caddr_t *);
+ *
+ * XXX can't actually prototype it, because some take three args!!!
  */
-typedef	bool_t (*xdrproc_t)();
-
-/*
- * The XDR handle.
- * Contains operation which is being applied to the stream,
- * an operations vector for the paticular implementation (e.g. see xdr_mem.c),
- * and two private fields for the use of the particular impelementation.
- */
-typedef struct {
-	enum xdr_op	x_op;		/* operation; fast additional param */
-	struct xdr_ops {
-		bool_t	(*x_getlong)();	/* get a long from underlying stream */
-		bool_t	(*x_putlong)();	/* put a long to " */
-		bool_t	(*x_getbytes)();/* get some bytes from " */
-		bool_t	(*x_putbytes)();/* put some bytes to " */
-		u_int	(*x_getpostn)();/* returns bytes off from beginning */
-		bool_t  (*x_setpostn)();/* lets you reposition the stream */
-		long *	(*x_inline)();	/* buf quick ptr to buffered data */
-		void	(*x_destroy)();	/* free privates of this xdr_stream */
-	} *x_ops;
-	caddr_t 	x_public;	/* users' data */
-	caddr_t		x_private;	/* pointer to private data */
-	caddr_t 	x_base;		/* private used for position info */
-	int		x_handy;	/* extra private word */
-} XDR;
+typedef	bool_t (*xdrproc_t)(XDR *, ...);
 
 /*
  * Operations defined on a XDR handle

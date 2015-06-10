@@ -206,7 +206,7 @@ xdr_u_short(xdrs, usp)
 	register XDR *xdrs;
 	u_short *usp;
 {
-	u_long l;
+	long l;
 
 	switch (xdrs->x_op) {
 

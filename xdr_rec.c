@@ -73,7 +73,7 @@ static bool_t	xdrrec_getbytes();
 static bool_t	xdrrec_putbytes();
 static u_int	xdrrec_getpos();
 static bool_t	xdrrec_setpos();
-static long *	xdrrec_inline();
+static int32_t *xdrrec_inline();
 static void	xdrrec_destroy();
 
 static struct  xdr_ops xdrrec_ops = {
@@ -366,13 +366,13 @@ xdrrec_setpos(xdrs, pos)
 	return (FALSE);
 }
 
-static long *
+static int32_t *
 xdrrec_inline(xdrs, len)
 	register XDR *xdrs;
 	int len;
 {
 	register RECSTREAM *rstrm = (RECSTREAM *)xdrs->x_private;
-	long * buf = NULL;
+	int32_t * buf = NULL;
 
 	switch (xdrs->x_op) {
 
@@ -380,7 +380,7 @@ xdrrec_inline(xdrs, len)
 
 	case XDR_ENCODE:
 		if ((rstrm->out_finger + len) <= rstrm->out_boundry) {
-			buf = (long *) rstrm->out_finger;
+			buf = (int32_t *) rstrm->out_finger;
 			rstrm->out_finger += len;
 		}
 		break;
@@ -388,7 +388,7 @@ xdrrec_inline(xdrs, len)
 	case XDR_DECODE:
 		if ((len <= rstrm->fbtbc) &&
 			((rstrm->in_finger + len) <= rstrm->in_boundry)) {
-			buf = (long *) rstrm->in_finger;
+			buf = (int32_t *) rstrm->in_finger;
 			rstrm->fbtbc -= len;
 			rstrm->in_finger += len;
 		}
