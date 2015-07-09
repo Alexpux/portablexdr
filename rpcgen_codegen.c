@@ -495,7 +495,7 @@ gen_decl_xdr_call (int indent, const struct decl *decl, const char *struct_name)
       break;
 
     case decl_type_opaque_fixed:
-      fprintf (yyout, "if (!xdr_opaque (xdrs, &objp, %s))\n", decl->len);
+      fprintf (yyout, "if (!xdr_opaque (xdrs, (char *)objp, %s))\n", decl->len);
       break;
 
     case decl_type_opaque_variable:
@@ -524,7 +524,7 @@ gen_decl_xdr_call (int indent, const struct decl *decl, const char *struct_name)
       str = sizeof_simple_type (decl->type);
       len_str = decl->len ? : "~0";
       fprintf (yyout,
-	       "if (!xdr_array (xdrs, %s%s.%s_val, %s%s.%s_len, %s, %s, (xdrproc_t) xdr_%s))\n",
+	       "if (!xdr_array (xdrs, (char **)%s%s.%s_val, %s%s.%s_len, %s, %s, (xdrproc_t) xdr_%s))\n",
 	       struct_name, decl->ident, decl->ident,
 	       struct_name, decl->ident, decl->ident,
 	       len_str,
@@ -534,7 +534,7 @@ gen_decl_xdr_call (int indent, const struct decl *decl, const char *struct_name)
 
     case decl_type_pointer:
       str = sizeof_simple_type (decl->type);
-      fprintf (yyout, "if (!xdr_pointer (xdrs, objp, %s, (xdrproc_t) xdr_%s))\n",
+      fprintf (yyout, "if (!xdr_pointer (xdrs, (char **)objp, %s, (xdrproc_t) xdr_%s))\n",
 	       str, xdr_func_of_simple_type (decl->type));
       free (str);
       break;
